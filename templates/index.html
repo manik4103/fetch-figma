@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Figma Data</title>
+</head>
+<body>
+    <h1>Fetch Figma Data</h1>
+
+    <form id="figmaForm">
+        <label for="file_key">File Key:</label>
+        <input type="text" id="file_key" name="file_key" required>
+        <br>
+
+        <label for="api_token">API Token:</label>
+        <input type="text" id="api_token" name="api_token" required>
+        <br><br>
+
+        <button type="button" onclick="fetchFigmaData()">Fetch</button>
+    </form>
+
+    <div id="error-message" style="color: red; display: none;">Error fetching data. Please try again.</div>
+    <div id="download-section" style="display: none;">
+        <h2>Data fetched successfully</h2>
+        <button id="download-btn" onclick="downloadJson()">Download JSON</button>
+    </div>
+
+    <script>
+        function fetchFigmaData() {
+            const fileKey = document.getElementById('file_key').value;
+            const apiToken = document.getElementById('api_token').value;
+
+            fetch('/fetch-figma', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ file_key: fileKey, api_token: apiToken })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    document.getElementById('error-message').style.display = 'block';
+                    document.getElementById('download-section').style.display = 'none';
+                    throw new Error('Error fetching Figma data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('download-section').style.display = 'block';
+                window.figmaData = data;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+        function downloadJson() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.figmaData, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute('href', dataStr);
+            downloadAnchor.setAttribute('download', 'figma_data.json');
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>
