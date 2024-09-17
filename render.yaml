@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: figma-api-service
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python getJson.py
+    plan: free
+    regions:
+      - oregon
+    runtime: python3
