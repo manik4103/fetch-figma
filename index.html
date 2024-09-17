@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma File Fetcher</title>
+    <style>
+        .error {
+            color: red;
+            display: none;
+        }
+        .success {
+            color: green;
+            display: none;
+        }
+        .download-btn {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fetch Figma File</h1>
+    
+    <form id="fetch-form">
+        <label for="file_key">Figma File Key:</label>
+        <input type="text" id="file_key" name="file_key" required><br><br>
+        
+        <label for="api_token">API Token:</label>
+        <input type="text" id="api_token" name="api_token" required><br><br>
+        
+        <button type="submit">Fetch Figma Data</button>
+    </form>
+
+    <div class="error" id="error-msg">Failed to fetch Figma data. Please check your input and try again.</div>
+    <div class="success" id="success-msg">Figma data fetched successfully!</div>
+    
+    <button class="download-btn" id="download-btn">Download JSON</button>
+
+    <script>
+        const form = document.getElementById('fetch-form');
+        const errorMsg = document.getElementById('error-msg');
+        const successMsg = document.getElementById('success-msg');
+        const downloadBtn = document.getElementById('download-btn');
+        let figmaData = null;
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(form);
+            const fileKey = formData.get('file_key');
+            const apiToken = formData.get('api_token');
+
+            fetch('/fetch-figma', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorMsg.style.display = 'block';
+                    successMsg.style.display = 'none';
+                    downloadBtn.style.display = 'none';
+                } else {
+                    figmaData = data;
+                    errorMsg.style.display = 'none';
+                    successMsg.style.display = 'block';
+                    downloadBtn.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+                downloadBtn.style.display = 'none';
+            });
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            if (figmaData) {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(figmaData, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "figma_data.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            }
+        });
+    </script>
+</body>
+</html>
