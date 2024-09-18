@@ -227,13 +227,13 @@
 
                 const data = await response.json();
 
-                if (response.ok && data.status === 200) {
-                    // Response is OK and status within response is 200, success case
-                    jsonData = data;
+                if (response.ok && !data.err) {
+                    // Response is OK and no error message is present in the response body, success case
+                    jsonData = data; // Store the data for download
                     successDiv.textContent = 'Figma data fetched successfully!';
                     downloadButton.style.display = 'block'; // Enable download button
                 } else {
-                    // Handle the case where the status in the response indicates an error
+                    // Handle error case
                     throw new Error(data.err || 'An error occurred while fetching Figma data.');
                 }
             } catch (error) {
@@ -242,6 +242,7 @@
                 downloadButton.style.display = 'none'; // Ensure download button stays hidden on error
             }
         });
+
 
 
 
