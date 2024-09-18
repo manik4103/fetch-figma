@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
             align-items: center;
             min-height: 100vh;
         }
+
         .container {
             background-color: white;
             padding: 30px;
@@ -24,6 +26,7 @@
             max-width: 450px;
             box-sizing: border-box;
         }
+
         h1 {
             text-align: center;
             color: #00796b;
@@ -31,6 +34,7 @@
             font-size: 24px;
             font-weight: 600;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -38,7 +42,9 @@
             color: #455a64;
             font-size: 14px;
         }
-        input[type="text"], input[type="password"] {
+
+        input[type="text"],
+        input[type="password"] {
             width: 95%;
             padding: 12px;
             margin-bottom: 20px;
@@ -48,10 +54,13 @@
             background-color: #f9f9f9;
             transition: border-color 0.3s ease;
         }
-        input[type="text"]:focus, input[type="password"]:focus {
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
             border-color: #00796b;
             outline: none;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -63,21 +72,27 @@
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
+
         button:hover {
             background-color: #004d40;
         }
-        .error-message, .success-message {
+
+        .error-message,
+        .success-message {
             font-size: 14px;
             text-align: center;
             margin-bottom: 20px;
             font-weight: bold;
         }
+
         .error-message {
             color: #d32f2f;
         }
+
         .success-message {
             color: #388e3c;
         }
+
         .download-btn {
             display: none;
             width: 100%;
@@ -91,20 +106,24 @@
             margin-top: 10px;
             transition: background-color 0.3s ease;
         }
+
         .download-btn:hover {
             background-color: #2e7d32;
         }
+
         footer {
             text-align: center;
             margin-top: 30px;
             font-size: 12px;
             color: #607d8b;
         }
+
         footer a {
             color: #00796b;
             text-decoration: none;
             font-weight: bold;
         }
+
         footer a:hover {
             text-decoration: underline;
         }
@@ -114,14 +133,21 @@
             .container {
                 padding: 20px;
             }
+
             h1 {
                 font-size: 20px;
             }
-            input[type="text"], input[type="password"], button, .download-btn {
+
+            input[type="text"],
+            input[type="password"],
+            button,
+            .download-btn {
                 font-size: 14px;
                 padding: 10px;
             }
-            .success-message, .error-message {
+
+            .success-message,
+            .error-message {
                 font-size: 13px;
             }
         }
@@ -130,31 +156,38 @@
             h1 {
                 font-size: 18px;
             }
-            input[type="text"], input[type="password"], button, .download-btn {
+
+            input[type="text"],
+            input[type="password"],
+            button,
+            .download-btn {
                 font-size: 12px;
                 padding: 8px;
             }
-            .success-message, .error-message {
+
+            .success-message,
+            .error-message {
                 font-size: 12px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <h1>Figma JSON Fetcher</h1>
-        
+
         <div id="error" class="error-message"></div>
         <div id="success" class="success-message"></div>
-        
+
         <form id="fetchForm">
             <label for="fileKey">Figma File Key:</label>
             <input type="text" id="fileKey" placeholder="Enter your Figma file key" required>
-            
+
             <label for="apiToken">API Token:</label>
             <input type="password" id="apiToken" placeholder="Enter your Figma API token" required>
-            
+
             <button type="submit">Fetch Figma Data</button>
         </form>
 
@@ -169,46 +202,46 @@
         let jsonData = null;
 
         form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    errorDiv.textContent = '';
-    successDiv.textContent = '';
-    downloadButton.style.display = 'none'; // Ensure download button is hidden initially
+            event.preventDefault();
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            downloadButton.style.display = 'none'; // Ensure download button is hidden initially
 
-    const fileKey = document.getElementById('fileKey').value;
-    const apiToken = document.getElementById('apiToken').value;
+            const fileKey = document.getElementById('fileKey').value;
+            const apiToken = document.getElementById('apiToken').value;
 
-    // Ensure both fields are filled out
-    if (!fileKey || !apiToken) {
-        errorDiv.textContent = 'Both file key and API token are required!';
-        return;
-    }
+            // Ensure both fields are filled out
+            if (!fileKey || !apiToken) {
+                errorDiv.textContent = 'Both file key and API token are required!';
+                return;
+            }
 
-    try {
-        const response = await fetch('/fetch-figma', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ file_key: fileKey, api_token: apiToken })
+            try {
+                const response = await fetch('/fetch-figma', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ file_key: fileKey, api_token: apiToken })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 200) {
+                    // Response is OK and status within response is 200, success case
+                    jsonData = data;
+                    successDiv.textContent = 'Figma data fetched successfully!';
+                    downloadButton.style.display = 'block'; // Enable download button
+                } else {
+                    // Handle the case where the status in the response indicates an error
+                    throw new Error(data.err || 'An error occurred while fetching Figma data.');
+                }
+            } catch (error) {
+                // Display the error message
+                errorDiv.textContent = error.message;
+                downloadButton.style.display = 'none'; // Ensure download button stays hidden on error
+            }
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Response status is 200, success case
-            jsonData = data;
-            successDiv.textContent = 'Figma data fetched successfully!';
-            downloadButton.style.display = 'block'; // Enable download button
-        } else {
-            // Error case: display the error and hide download button
-            throw new Error(data.err || 'Something went wrong.');
-        }
-    } catch (error) {
-        // Display the error message
-        errorDiv.textContent = error.message;
-        downloadButton.style.display = 'none'; // Ensure download button stays hidden on error
-    }
-});
 
 
 
@@ -226,4 +259,5 @@
     </script>
 
 </body>
+
 </html>
