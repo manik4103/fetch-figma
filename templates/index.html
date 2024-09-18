@@ -9,11 +9,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #e0f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
         .container {
             background-color: white;
@@ -22,6 +22,7 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 450px;
+            box-sizing: border-box;
         }
         h1 {
             text-align: center;
@@ -106,6 +107,36 @@
         }
         footer a:hover {
             text-decoration: underline;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            input[type="text"], input[type="password"], button, .download-btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .success-message, .error-message {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 18px;
+            }
+            input[type="text"], input[type="password"], button, .download-btn {
+                font-size: 12px;
+                padding: 8px;
+            }
+            .success-message, .error-message {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
