@@ -169,41 +169,43 @@
         let jsonData = null;
 
         form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            errorDiv.textContent = '';
-            successDiv.textContent = '';
-            downloadButton.style.display = 'none';
-            
-            const fileKey = document.getElementById('fileKey').value;
-            const apiToken = document.getElementById('apiToken').value;
+    event.preventDefault();
+    errorDiv.textContent = '';
+    successDiv.textContent = '';
+    downloadButton.style.display = 'none';
+    
+    const fileKey = document.getElementById('fileKey').value;
+    const apiToken = document.getElementById('apiToken').value;
 
-            if (!fileKey || !apiToken) {
-                errorDiv.textContent = 'Both file key and API token are required!';
-                return;
-            }
+    // Ensure you're passing only the token value
+    if (!fileKey || !apiToken) {
+        errorDiv.textContent = 'Both file key and API token are required!';
+        return;
+    }
 
-            try {
-                const response = await fetch('/fetch-figma', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ file_key: fileKey, api_token: apiToken })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    jsonData = data;
-                    successDiv.textContent = 'Figma data fetched successfully!';
-                    downloadButton.style.display = 'block';
-                } else {
-                    throw new Error(data.error || 'Something went wrong.');
-                }
-            } catch (error) {
-                errorDiv.textContent = error.message;
-            }
+    try {
+        const response = await fetch('/fetch-figma', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ file_key: fileKey, api_token: apiToken })
         });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            jsonData = data;
+            successDiv.textContent = 'Figma data fetched successfully!';
+            downloadButton.style.display = 'block';
+        } else {
+            throw new Error(data.error || 'Something went wrong.');
+        }
+    } catch (error) {
+        errorDiv.textContent = error.message;
+    }
+});
+
 
         downloadButton.addEventListener('click', () => {
             if (jsonData) {
